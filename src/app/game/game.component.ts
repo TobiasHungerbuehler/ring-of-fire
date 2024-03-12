@@ -1,11 +1,27 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Game } from '../models/game';
+import { PlayerComponent } from '../player/player.component';
+
+import {MatButtonModule} from '@angular/material/button';
+import {MatIconModule} from '@angular/material/icon';
+
+import {MatDialog, MatDialogModule} from '@angular/material/dialog';
+
+import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
+
+
 
 @Component({
   selector: 'app-game',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, 
+            PlayerComponent, 
+            MatButtonModule, 
+            MatIconModule,
+            MatDialogModule,
+            DialogAddPlayerComponent,       
+          ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
 })
@@ -15,8 +31,8 @@ export class GameComponent {
   currentCard : string = '';
   game: Game = null!;
   playedCard: string = ''
-
-  constructor(){
+  
+  constructor(private dialog: MatDialog){
     this.newGame()
   }
 
@@ -37,6 +53,17 @@ export class GameComponent {
 
     }
   }
+
+
+  openDialog(): void {
+    const dialogRef = this.dialog.open(DialogAddPlayerComponent);      
+
+    console.log('function openDialog')
+
+    dialogRef.afterClosed().subscribe((name:string) => {
+    this.game.players.push(name)});
+  }
+
 
 
 

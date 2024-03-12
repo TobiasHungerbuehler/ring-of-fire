@@ -1,4 +1,9 @@
 
+@for (player of game.players; track $index;) {
+    <app-player [ngStyle]=" {'top.px': 200 + ($index * 150)} " [name]=" player " class="player-position"></app-player>
+}
+
+
 <section class="field">
  
     <div class="card-stack">
@@ -22,3 +27,8 @@
 
 
 </section>
+
+
+<button mat-fab color="primary" (click)="openDialog()" class="btn-add">
+    <mat-icon>add</mat-icon>
+  </button>
