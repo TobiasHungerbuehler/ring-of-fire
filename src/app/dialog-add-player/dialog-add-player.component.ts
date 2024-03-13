@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MatDialogContent, MatDialogModule } from '@angular/material/dialog';
+import { MatDialogContent, MatDialogModule, MatDialog } from '@angular/material/dialog';
 import {FormsModule} from '@angular/forms';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatInputModule} from '@angular/material/input';
@@ -20,10 +20,13 @@ export class DialogAddPlayerComponent {
 
   name:string = '';
 
-  onNoClick(){
+  constructor(private dialog: MatDialog){
 
   }
 
+  onNoClick(){
+    this.dialog.closeAll();
+  }
 
 
 
