@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component,  } from '@angular/core';
 import { Game } from '../models/game';
 import { PlayerComponent } from '../player/player.component';
 
@@ -10,6 +10,11 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 
 import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player.component';
 import { GameInfoComponent } from '../game-info/game-info.component';
+import { FirebaseService } from '../firebase-service/firebase-service';
+
+import { GameInterface } from '../interfaces/game.interfaces';
+import { ActivatedRoute } from '@angular/router';
+import { OnInit } from '@angular/core';
 
 
 
@@ -23,6 +28,8 @@ import { GameInfoComponent } from '../game-info/game-info.component';
             MatDialogModule,
             DialogAddPlayerComponent,  
             GameInfoComponent,
+
+          
           ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
@@ -33,13 +40,34 @@ export class GameComponent {
   currentCard : string = '';
   game: Game = null!;
   playedCard: string = ''
-  
-  constructor(private dialog: MatDialog){
-    this.newGame()
-  }
+  gameId: string = '';
 
-  newGame(){
-   this.game = new Game();
+
+  constructor(private dialog: MatDialog, private firebaseService : FirebaseService, private routeId: ActivatedRoute ){
+  }
+  
+  ngOnInit(){
+    
+    //ruft die id aus dem path
+    
+    this.routeId.params.subscribe((params) => { 
+      this.gameId = params['id'];
+      console.log('die gameId',this.gameId)
+      this.startGame()
+    })
+    
+  }
+  
+  
+  startGame(){
+    this.game = new Game()
+    
+    this.firebaseService.loadFromServer();
+
+    //this.firebaseService.addGame(this.game);
+
+
+    
   }
   
   takeCard(){
@@ -54,8 +82,8 @@ export class GameComponent {
         this.game.playedCards.push(card);
         this.pickCardAnimation = false;
       },1000)
-
     }
+    this.firebaseService.updateGame(this.gameId, this.game);
   }
 
 
@@ -70,7 +98,7 @@ export class GameComponent {
   }
 
 
-
+  
 
 
 
