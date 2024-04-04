@@ -62,7 +62,7 @@ export class GameComponent {
   startGame(){
     this.game = new Game()
     
-    this.firebaseService.loadFromServer();
+    this.firebaseService.loadFromServer(this.game);
 
     //this.firebaseService.addGame(this.game);
 
