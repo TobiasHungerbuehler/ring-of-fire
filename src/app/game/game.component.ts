@@ -44,25 +44,27 @@ export class GameComponent {
 
 
   constructor(private dialog: MatDialog, private firebaseService : FirebaseService, private routeId: ActivatedRoute ){
+    
   }
   
   ngOnInit(){
-    
-    //ruft die id aus dem path
-    
-    this.routeId.params.subscribe((params) => { 
-      this.gameId = params['id'];
-      console.log('die gameId',this.gameId)
-      this.startGame()
-    })
-    
+    this.idFromURL()
   }
   
+  idFromURL(){
+    this.routeId.params.subscribe((params) => { 
+      this.gameId = params['id'];
+      console.log('id',this.gameId);
+      
+      this.firebaseService.loadFromServer(this.game, this.gameId);
+      //this.newGame()
+    })
+  }
   
-  startGame(){
-    this.game = new Game()
+  newGame(){
     
-    this.firebaseService.loadFromServer(this.game);
+    //this.game = new Game()
+
 
     //this.firebaseService.addGame(this.game);
 
