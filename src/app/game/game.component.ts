@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component,  } from '@angular/core';
+import { Component, OnDestroy, OnInit  } from '@angular/core';
 import { Game } from '../models/game';
 import { PlayerComponent } from '../player/player.component';
 
@@ -14,7 +14,9 @@ import { FirebaseService } from '../firebase-service/firebase-service';
 
 import { GameInterface } from '../interfaces/game.interfaces';
 import { ActivatedRoute } from '@angular/router';
-import { OnInit } from '@angular/core';
+
+
+import { Subscription } from 'rxjs';
 
 
 
@@ -27,9 +29,7 @@ import { OnInit } from '@angular/core';
             MatIconModule,
             MatDialogModule,
             DialogAddPlayerComponent,  
-            GameInfoComponent,
-
-          
+            GameInfoComponent
           ],
   templateUrl: './game.component.html',
   styleUrl: './game.component.scss'
@@ -41,35 +41,27 @@ export class GameComponent {
   game: Game = null!;
   playedCard: string = ''
   gameId: string = '';
-
-
-  constructor(private dialog: MatDialog, private firebaseService : FirebaseService, private routeId: ActivatedRoute ){
+  unsubscribe: any;
+  
+  constructor(private dialog: MatDialog, private firebaseService: FirebaseService, private routeId: ActivatedRoute){
   }
   
   ngOnInit(){
-    
-    //ruft die id aus dem path
-    
     this.routeId.params.subscribe((params) => { 
       this.gameId = params['id'];
       console.log('die gameId',this.gameId)
-      this.startGame()
+      this.loadGame()
     })
-    
   }
-  
-  
-  startGame(){
+
+
+  loadGame(){
     this.game = new Game()
-    
-    this.firebaseService.loadFromServer(this.game);
+    this.unsubscribe = this.firebaseService.loadGame(this.game, this.gameId);
 
-    //this.firebaseService.addGame(this.game);
-
-
-    
   }
-  
+
+
   takeCard(){
     const card = this.game.stack.pop();
     if (card !== undefined && !this.pickCardAnimation) {
@@ -98,7 +90,11 @@ export class GameComponent {
   }
 
 
-  
+  ngOnDestroy() {
+    if (this.unsubscribe) {
+      this.unsubscribe.unsubscribe();
+    }
+  }
 
 
 

@@ -1,11 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Injectable, inject } from '@angular/core';
 import { Firestore, collection, doc, collectionData, onSnapshot, addDoc, updateDoc, docData} from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
+
 import { GameInterface } from '../interfaces/game.interfaces';
 import { Game } from '../models/game';
-
-
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root' // Provide the service at the root level
@@ -14,49 +13,37 @@ import { Game } from '../models/game';
 export class FirebaseService {
   gameData: GameInterface[] = [];
   gameConnection: any;
-  gameId: string = '4EBAfhOlFipBDRXr3x2u'; // Ersetzen Sie dies mit der gewünschten ID
+  
   firestore: Firestore = inject(Firestore);
 
-
   constructor() {
-    console.log('Game start zustand:', Game)
-    console.log('gameData', this.gameData)
-    
+
+  }
+  
+  addGame(game: Game): Promise<string> {
+    return addDoc(collection(this.firestore, 'games-db'), { game: this.getCleanJson(game) })
+      .then(docRef => docRef.id) // Gib die ID des neu erstellten Dokuments zurück
+      .catch(error => {
+        console.error('Fehler beim Hinzufügen des Spiels:', error);
+        throw error; // Wirf den Fehler weiter, um ihn in der Komponente behandeln zu können
+      });
   }
   
 
-
-  loadFromServer(game: Game) {
-
- 
-    const gameRef = doc(this.firestore, 'games-db', this.gameId);
+  loadGame(game: Game, gameId: string) {
+    const gameRef = doc(this.firestore, 'games-db', gameId);
     this.gameConnection = docData(gameRef);
   
-    this.gameConnection.subscribe((gameData: any) => {
-      console.log('Spieler:', gameData.game.currentPlayer); // Ausgabe des Spieler-Arrays
-
+    return this.gameConnection.subscribe((gameData: any) => {
       game.currentPlayer = gameData.game.currentPlayer;
       game.players = gameData.game.players;
       game.stack = gameData.game.stack;
       game.playedCards = gameData.game.playedCards;
-
-      console.log('Game nach update:', game.players)
     });
 
   }
   
 
-  addGame(game: GameInterface) {
-    //console.log('geiler dude',this.getCleanJson(game))
-
-    //  addDoc(collection(this.firestore, 'games-db'), { game: this.getCleanJson(game) })
-    //    .then(() => {
-    //      console.log('Testobjekt erfolgreich hinzugefügt!');
-    //    })
-    //    .catch(error => {
-    //      console.error('Fehler beim Hinzufügen des Testobjekts:', error);
-    //    });
-  }
 
   async updateGame(path: string, game: GameInterface){
     if(path){
@@ -78,11 +65,6 @@ export class FirebaseService {
       currentPlayer: game.currentPlayer
     }
   }
-
-
-
-
-
 
 }
 
