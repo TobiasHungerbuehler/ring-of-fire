@@ -13,7 +13,7 @@ import { FirebaseService } from '../firebase-service/firebase-service';
   styleUrl: './start-screen.component.scss'
 })
 export class StartScreenComponent {
-  gameId: any = '4EBAfhOlFipBDRXr3x2u'; // Ersetzen Sie dies mit der gewünschten ID
+  //gameId: any = '4EBAfhOlFipBDRXr3x2u'; // Ersetzen Sie dies mit der gewünschten ID
 
   constructor(private router: Router, private firebaseService: FirebaseService){}
 
