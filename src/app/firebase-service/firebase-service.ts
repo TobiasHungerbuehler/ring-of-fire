@@ -44,18 +44,7 @@ export class FirebaseService {
   }
   
 
-  addGame(game: GameInterface) {
-      addDoc(collection(this.firestore, 'games-db'), { game: this.getCleanJson(game) })
-        .then((gameId) => {
-          console.log('new game ID =', gameId);
-          
-          this.router.navigateByUrl('game/' + gameId.id);
 
-        })
-        .catch(error => {
-          console.error('Fehler beim Hinzufügen des Testobjekts:', error);
-        });
-  }
 
   async updateGame(path: string, game: GameInterface){
     if(path){
